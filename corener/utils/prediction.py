@@ -377,6 +377,7 @@ def parse_predictions(
         if token_to_idx is not None:
             # adding start and end chars to entities/mentions
             curr_token_to_idx = token_to_idx[i]
+            curr_doc_id = token_to_idx[i]["doc_id"]
             spans = [extended_converted_entities, extended_converted_mentions]
             for span in spans:
                 for e in span:
@@ -397,6 +398,7 @@ def parse_predictions(
 
         doc_predictions.update(
             dict(
+                doc_id=curr_doc_id,
                 tokens=[t.phrase for t in tokens],
                 entities=extended_converted_entities,
                 relations=converted_relations,

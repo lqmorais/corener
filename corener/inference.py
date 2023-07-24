@@ -12,6 +12,7 @@ from corener.data import sampling
 from corener.data.dataset import MTLDataset
 from corener.models import Corener, ModelOutput
 from corener.utils import get_device, prediction
+from corener.utils import converter
 
 
 @dataclass
@@ -36,18 +37,20 @@ def text_to_tokens(documents: List[str], nlp):
     -------
 
     """
-    docs = [nlp(doc) for doc in documents]
-    parsed_docs = [[t.text for t in doc] for doc in docs]
+    docs = [(doc[0], nlp(doc[1])) for doc in documents]
+    parsed_docs = [[t.text for t in doc[1]] for doc in docs]
     token_to_idx = [
         {
-            "text": doc.text,
+            "text": doc[1].text,
+            "doc_id": doc[0],
             **{
                 token.i: (token.idx, token.idx + len(token.text), token.text)
-                for token in doc
+                for token in doc[1]
             },
         }
         for doc in docs
     ]
+
     return parsed_docs, token_to_idx
 
 
@@ -105,7 +108,15 @@ def load_pretrained_model(
 def run_inference(
     config: InferenceInput, model: Corener, dataset: MTLDataset, tokenizer
 ):
-    data = args.input
+    # data = args.input
+
+    data = [
+        (0, "Paciente internado com HAS,"),
+        (0, " DM. Hipercorado, comunicativo, orientado, consciente. Apresenta abdomen globoso"),
+        (1, "Paciente diagnosticado com DM,"),
+        (1, " nega HAS e outras comorbidades")
+    ]
+
     if not isinstance(data, list):
         data = [data]
     data, token_to_idx = text_to_tokens(data, dataset.data_parser.spacy_nlp)
@@ -184,7 +195,9 @@ def run_inference(
         token_to_idx=token_to_idx,
     )
 
-    return predictions
+    converted_predictions = converter.prediction_converter(predictions)
+
+    return converted_predictions
 
 
 def main(args):
