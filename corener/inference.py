@@ -11,8 +11,7 @@ from transformers import AutoTokenizer
 from corener.data import sampling
 from corener.data.dataset import MTLDataset
 from corener.models import Corener, ModelOutput
-from corener.utils import get_device, prediction
-from corener.utils import converter
+from corener.utils import get_device, prediction, converter, preprocess
 
 
 @dataclass
@@ -111,15 +110,15 @@ def run_inference(
     # data = args.input
 
     data = [
-        (0, "Paciente internado com HAS,"),
-        (0, " DM. Hipercorado, comunicativo, orientado, consciente. Apresenta abdomen globoso"),
-        (1, "Paciente diagnosticado com DM,"),
-        (1, " nega HAS e outras comorbidades")
+        "Paciente internado com HAS, DM. Hipercorado, comunicativo, orientado, consciente. Apresenta abdomen globoso",
+        "Paciente diagnosticado com DM, nega HAS e outras comorbidades"
     ]
+
+    preprocessed_data = preprocess.preprocess_data(data, 5)
 
     if not isinstance(data, list):
         data = [data]
-    data, token_to_idx = text_to_tokens(data, dataset.data_parser.spacy_nlp)
+    data, token_to_idx = text_to_tokens(preprocessed_data, dataset.data_parser.spacy_nlp)
 
     dataset.read_dataset(data)
     max_doc_contexts = max([len(doc.encoding) for doc in dataset.documents])

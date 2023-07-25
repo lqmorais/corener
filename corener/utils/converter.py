@@ -11,7 +11,11 @@ def prediction_converter(data):
           "relations": []
       }
     doc_data = doc_id_to_data[doc_id]
-    doc_data["text"] += item["text"]
+    
+    if doc_data["text"]:
+      doc_data["text"] += " "
+
+    doc_data["text"] += item["text"] 
     doc_data["tokens"].extend(item["tokens"])
 
     for entity in item["entities"]:
