@@ -1,6 +1,7 @@
-
 def prediction_converter(data):
   doc_id_to_data = {}
+  entity_mapping = {}
+
   for item in data:
     doc_id = item["doc_id"]
     if doc_id not in doc_id_to_data:
@@ -11,21 +12,37 @@ def prediction_converter(data):
           "relations": []
       }
     doc_data = doc_id_to_data[doc_id]
-    
+
     if doc_data["text"]:
       doc_data["text"] += " "
 
-    doc_data["text"] += item["text"] 
+    doc_data["text"] += item["text"]
     doc_data["tokens"].extend(item["tokens"])
 
-    for entity in item["entities"]:
+    offset_tokens = len(doc_data["tokens"]) - len(item["tokens"])
+    offset_text = len(doc_data["text"]) - len(item["text"])
+
+    for entity_idx, entity in enumerate(item["entities"]):
       entity_copy = entity.copy()
-      entity_copy["start"] += len(doc_data["tokens"]) - len(item["tokens"])
-      entity_copy["end"] += len(doc_data["tokens"]) - len(item["tokens"])
-      entity_copy["start_char"] += len(doc_data["text"]) - len(item["text"])
-      entity_copy["end_char"] += len(doc_data["text"]) - len(item["text"])
+      entity_copy["start"] += offset_tokens
+      entity_copy["end"] += offset_tokens
+      entity_copy["start_char"] += offset_text
+      entity_copy["end_char"] += offset_text
       doc_data["entities"].append(entity_copy)
 
-    doc_data["relations"].extend(item["relations"])
+      # Mapping for old entity index and new entity index
+      entity_mapping[entity_idx] = len(doc_data["entities"]) - 1
+
+    for relation in item["relations"]:
+      relation_copy = relation.copy()
+      head_entity_index = relation["head"]
+      tail_entity_index = relation["tail"]
+
+      # Update the relation head and tail indices based on the entity mapping
+      relation_copy["head"] = entity_mapping.get(head_entity_index, relation["head"])
+      relation_copy["tail"] = entity_mapping.get(tail_entity_index, relation["tail"])
+      doc_data["relations"].append(relation_copy)
 
   return list(doc_id_to_data.values())
+
+  

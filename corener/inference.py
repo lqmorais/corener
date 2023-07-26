@@ -110,11 +110,12 @@ def run_inference(
     # data = args.input
 
     data = [
-        "Paciente internado com HAS, DM. Hipercorado, comunicativo, orientado, consciente. Apresenta abdomen globoso",
-        "Paciente diagnosticado com DM, nega HAS e outras comorbidades"
+        # "Paciente internado com HAS, DM. Hipercorado, comunicativo, orientado, consciente. Apresenta abdomen globoso",
+        # "Paciente diagnosticado com DM, nega HAS e outras comorbidades",
+        "36 anos , casada ,1 filho , procedente do rj ( inca ) # ca de colo uterino recidivado; logo após rt+ qt # carbo + taxol x 2;toxicid hematologica + n/v g3. em junho /15, tendo feito apenas 2 ciclos . interrompeu por tvp em mie . em uso de clexane apenas . realizado nova tc da pelve com progressão de massa pelvica sendo optado pro qt isolda com carbo + taxol . paciente decidiu retornar a fortaleza para tto aqui . chegou a fazer 20 sessões de rt # tc abd e pelve ( 5/10/15 : formação expansiva em região pelvica esq medindo 14,0 x 8,9 x 4,2 cm trombose em veia ilíaca comum esq. ainda com dor em uso de tramal ao exame redução da massa pelvica - não palo mais hb 8,9 l 17360 pq 598000 cr 0,89 tap 2,87 apetite melhor dor controlada com tramal cd : suspendeu marevan por stv ( fez hb 5,0 necessitou transfusão de 3u ch libero qt com reduçao de dose ; aguarda avastin"
     ]
 
-    preprocessed_data = preprocess.preprocess_data(data, 5)
+    preprocessed_data = preprocess.preprocess_data(data, 10)
 
     if not isinstance(data, list):
         data = [data]
