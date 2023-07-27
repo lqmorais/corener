@@ -330,8 +330,8 @@ def parse_predictions(
     documents,
     pred_entities,
     pred_relations,
-    pred_mentions,
-    pred_references,
+    # pred_mentions,
+    # pred_references,
     token_to_idx=None,
 ):
     predictions = []
@@ -340,8 +340,8 @@ def parse_predictions(
         tokens = doc.tokens
         sample_pred_entities = pred_entities[i]
         sample_pred_relations = pred_relations[i]
-        sample_pred_mentions = pred_mentions[i]
-        sample_pred_references = pred_references[i]
+        # sample_pred_mentions = pred_mentions[i]
+        # sample_pred_references = pred_references[i]
 
         # convert entities
         converted_entities, extended_converted_entities = convert_entities(
@@ -353,32 +353,33 @@ def parse_predictions(
         )
 
         # convert mentions
-        converted_mentions, extended_converted_mentions = convert_entities(
-            sample_pred_mentions, tokens
-        )
+        # converted_mentions, extended_converted_mentions = convert_entities(
+        #     sample_pred_mentions, tokens
+        # )
         # convert references
-        converted_references = convert_relations(
-            sample_pred_references, tokens, converted_mentions
-        )
+        # converted_references = convert_relations(
+        #     sample_pred_references, tokens, converted_mentions
+        # )
 
-        clusters = convert_to_clusters(
-            mentions=extended_converted_mentions,
-            references=converted_references,
-            filter_top=True,
-        )
-        clusters = [
-            [
-                {"start": c[0][0], "end": c[0][1], "span": c[1], "cluster_id": i}
-                for c in cluster
-            ]
-            for i, cluster in enumerate(clusters)
-        ]
+        # clusters = convert_to_clusters(
+        #     mentions=extended_converted_mentions,
+        #     references=converted_references,
+        #     filter_top=True,
+        # )
+        # clusters = [
+        #     [
+        #         {"start": c[0][0], "end": c[0][1], "span": c[1], "cluster_id": i}
+        #         for c in cluster
+        #     ]
+        #     for i, cluster in enumerate(clusters)
+        # ]
 
         if token_to_idx is not None:
             # adding start and end chars to entities/mentions
             curr_token_to_idx = token_to_idx[i]
             curr_doc_id = token_to_idx[i]["doc_id"]
-            spans = [extended_converted_entities, extended_converted_mentions]
+            # spans = [extended_converted_entities, extended_converted_mentions]
+            spans = [extended_converted_entities]
             for span in spans:
                 for e in span:
                     start_token = curr_token_to_idx[e["start"]]
@@ -386,11 +387,11 @@ def parse_predictions(
                     e.update(dict(start_char=start_token[0], end_char=end_token[1]))
 
             # clusters
-            for cluster in clusters:
-                for m in cluster:
-                    start_token = curr_token_to_idx[m["start"]]
-                    end_token = curr_token_to_idx[m["end"] - 1]
-                    m.update(dict(start_char=start_token[0], end_char=end_token[1]))
+            # for cluster in clusters:
+            #     for m in cluster:
+            #         start_token = curr_token_to_idx[m["start"]]
+            #         end_token = curr_token_to_idx[m["end"] - 1]
+            #         m.update(dict(start_char=start_token[0], end_char=end_token[1]))
 
         doc_predictions = dict()
         if token_to_idx is not None:
@@ -402,9 +403,9 @@ def parse_predictions(
                 tokens=[t.phrase for t in tokens],
                 entities=extended_converted_entities,
                 relations=converted_relations,
-                mentions=extended_converted_mentions,
-                references=converted_references,
-                clusters=clusters,
+                # mentions=extended_converted_mentions,
+                # references=converted_references,
+                # clusters=clusters,
             )
         )
 

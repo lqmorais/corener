@@ -336,7 +336,7 @@ class DataParser:
                     doc_tokens, doc_encoding = self._parse_tokens(doc)
                     # todo: need refactoring so we won't need dummies
                     _ = self._create_document(
-                        doc_tokens, [], [], [], [], doc_encoding, 1, 1, 1, 1, None
+                        doc_tokens, [], [], [], [], doc_encoding, 1, 0, 1, 0, None
                     )
             else:
                 # not split into words
@@ -344,7 +344,7 @@ class DataParser:
                     doc_tokens = [t.text for t in self.spacy_nlp(doc)]
                     doc_tokens, doc_encoding = self._parse_tokens(doc_tokens)
                     _ = self._create_document(
-                        doc_tokens, [], [], [], [], doc_encoding, 1, 1, 1, 1, None
+                        doc_tokens, [], [], [], [], doc_encoding, 1, 0, 1, 0, None
                     )
 
     def _read_from_file(self, path):

@@ -142,8 +142,8 @@ def run_inference(
 
     pred_entities = []
     pred_relations = []
-    pred_mentions = []
-    pred_references = []
+    # pred_mentions = []
+    # pred_references = []
 
     model = model.to(config.device)
     model.eval()
@@ -174,24 +174,24 @@ def run_inference(
         pred_relations.extend(batch_pred_relations)
 
         # convert mentions references predictions
-        batch_pred_mentions, batch_pred_references = prediction.convert_predictions(
-            output.mention_clf,
-            output.references_clf,
-            output.references,
-            batch,
-            config.ref_filter_threshold,
-            dataset.data_parser,
-            is_ner_rel=False,
-        )
-        pred_mentions.extend(batch_pred_mentions)
-        pred_references.extend(batch_pred_references)
+        # batch_pred_mentions, batch_pred_references = prediction.convert_predictions(
+        #     output.mention_clf,
+        #     output.references_clf,
+        #     output.references,
+        #     batch,
+        #     config.ref_filter_threshold,
+        #     dataset.data_parser,
+        #     is_ner_rel=False,
+        # )
+        # pred_mentions.extend(batch_pred_mentions)
+        # pred_references.extend(batch_pred_references)
 
     predictions = prediction.parse_predictions(
         documents=dataset.documents,
         pred_entities=pred_entities,
         pred_relations=pred_relations,
-        pred_mentions=pred_mentions,
-        pred_references=pred_references,
+        # pred_mentions=pred_mentions,
+        # pred_references=pred_references,
         token_to_idx=token_to_idx,
     )
 

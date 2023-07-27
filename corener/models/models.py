@@ -494,54 +494,54 @@ class Corener(nn.Module):
         rel_clf = rel_clf * rel_sample_masks  # mask
 
         # EMD + CR
-        size_embeddings = self.emd_size_embeddings(
-            entity_sizes
-        )  # embed entity candidate sizes
-        # classify mentions
-        mention_clf, mention_spans_pool, mention_representation = self._classify_spans(
-            input_ids,
-            token_embedding,
-            entity_masks,
-            size_embeddings,
-            classifier=self.emd_classifier,
-        )
+        # size_embeddings = self.emd_size_embeddings(
+        #     entity_sizes
+        # )  # embed entity candidate sizes
+        # # classify mentions
+        # mention_clf, mention_spans_pool, mention_representation = self._classify_spans(
+        #     input_ids,
+        #     token_embedding,
+        #     entity_masks,
+        #     size_embeddings,
+        #     classifier=self.emd_classifier,
+        # )
 
-        # ignore entity candidates that do not constitute an actual entity for relations (based on classifier)
-        references, ref_masks, ref_sample_masks = self._filter_spans(
-            mention_clf,
-            entity_spans,
-            entity_sample_masks,
-            ctx_size,
-            device=self.cr_classifier[-1].weight.device,
-        )
+        # # ignore entity candidates that do not constitute an actual entity for relations (based on classifier)
+        # references, ref_masks, ref_sample_masks = self._filter_spans(
+        #     mention_clf,
+        #     entity_spans,
+        #     entity_sample_masks,
+        #     ctx_size,
+        #     device=self.cr_classifier[-1].weight.device,
+        # )
 
-        # apply softmax
-        mention_clf = torch.softmax(mention_clf, dim=2)
+        # # apply softmax
+        # mention_clf = torch.softmax(mention_clf, dim=2)
 
-        ref_sample_masks = ref_sample_masks.float().unsqueeze(-1)
-        token_embedding_large = token_embedding.unsqueeze(1).repeat(
-            1, max(min(references.shape[1], self._max_pairs), 1), 1, 1
-        )
+        # ref_sample_masks = ref_sample_masks.float().unsqueeze(-1)
+        # token_embedding_large = token_embedding.unsqueeze(1).repeat(
+        #     1, max(min(references.shape[1], self._max_pairs), 1), 1, 1
+        # )
 
-        # obtain relation logits
-        ref_logits = self._classify_relations(
-            mention_spans_pool,
-            size_embeddings,
-            references,
-            ref_masks,
-            token_embedding_large,
-            classifier=self.cr_classifier,
-        )
-        ref_clf = torch.sigmoid(ref_logits)
-        ref_clf = ref_clf * ref_sample_masks  # mask
+        # # obtain relation logits
+        # ref_logits = self._classify_relations(
+        #     mention_spans_pool,
+        #     size_embeddings,
+        #     references,
+        #     ref_masks,
+        #     token_embedding_large,
+        #     classifier=self.cr_classifier,
+        # )
+        # ref_clf = torch.sigmoid(ref_logits)
+        # ref_clf = ref_clf * ref_sample_masks  # mask
 
         return ModelOutput(
             entity_clf=entity_clf,
             rel_clf=rel_clf,
-            mention_clf=mention_clf,
-            references_clf=ref_clf,
+            # mention_clf=mention_clf,
+            # references_clf=ref_clf,
             relations=relations,
-            references=references,
+            # references=references,
         )
 
     @staticmethod

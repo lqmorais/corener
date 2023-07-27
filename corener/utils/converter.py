@@ -6,10 +6,10 @@ def prediction_converter(data):
     doc_id = item["doc_id"]
     if doc_id not in doc_id_to_data:
       doc_id_to_data[doc_id] = {
-          "text": "",
-          "tokens": [],
-          "entities": [],
-          "relations": []
+        "text": "",
+        "tokens": [],
+        "entities": [],
+        "relations": []
       }
     doc_data = doc_id_to_data[doc_id]
 
@@ -31,16 +31,27 @@ def prediction_converter(data):
       doc_data["entities"].append(entity_copy)
 
       # Mapping for old entity index and new entity index
-      entity_mapping[entity_idx] = len(doc_data["entities"]) - 1
+      entity_mapping[entity_idx] = {
+        "new_index": len(doc_data["entities"]) - 1,
+        "start_char": entity_copy["start_char"]
+      }
 
     for relation in item["relations"]:
       relation_copy = relation.copy()
       head_entity_index = relation["head"]
       tail_entity_index = relation["tail"]
 
-      # Update the relation head and tail indices based on the entity mapping
-      relation_copy["head"] = entity_mapping.get(head_entity_index, relation["head"])
-      relation_copy["tail"] = entity_mapping.get(tail_entity_index, relation["tail"])
+      head_entity_info = entity_mapping.get(head_entity_index)
+      tail_entity_info = entity_mapping.get(tail_entity_index)
+
+      if head_entity_info:
+        relation_copy["head"] = head_entity_info["new_index"]
+        relation_copy["head_start"] = head_entity_info["start_char"]
+
+      if tail_entity_info:
+        relation_copy["tail"] = tail_entity_info["new_index"]
+        relation_copy["tail_start"] = tail_entity_info["start_char"]
+
       doc_data["relations"].append(relation_copy)
 
   return list(doc_id_to_data.values())
